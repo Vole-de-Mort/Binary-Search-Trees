@@ -111,6 +111,142 @@ class Tree {
       return this.find(root.right, value);
     }
   }
+
+  levelOrder(callback) {
+    const result = [];
+    const queue = [];
+    if (this.root !== null) {
+      queue.push(this.root);
+    }
+
+    while (queue.length > 0) {
+      const node = queue.shift();
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+
+      if (node.left !== null) {
+        queue.push(node.left);
+      }
+      if (node.right !== null) {
+        queue.push(node.right);
+      }
+    }
+
+    return result;
+  }
+
+  levelOrder(callback) {
+    const result = [];
+    const queue = [];
+    if (this.root !== null) {
+      queue.push(this.root);
+    }
+
+    while (queue.length > 0) {
+      const node = queue.shift();
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+
+      if (node.left !== null) {
+        queue.push(node.left);
+      }
+      if (node.right !== null) {
+        queue.push(node.right);
+      }
+    }
+
+    return result;
+  }
+
+  inOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      traverse(node.left);
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+      traverse(node.right);
+    };
+    traverse(this.root);
+    return result;
+  }
+
+  preOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+      traverse(node.left);
+      traverse(node.right);
+    };
+    traverse(this.root);
+    return result;
+  }
+
+  postOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      traverse(node.left);
+      traverse(node.right);
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+    };
+    traverse(this.root);
+    return result;
+  }
+
+  height(node){
+    if (node == null){
+      return -1;
+    }
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    return Math.max(leftHeight, rightHeight) + 1
+  }
+
+  depth(node, current = this.root, depth = 0) {
+    if (current === null) return -1;
+    if (current === node) return depth;
+
+    const leftDepth = this.depth(node, current.left, depth + 1);
+    if (leftDepth !== -1) return leftDepth;
+
+    return this.depth(node, current.right, depth + 1);
+  }
+
+  isBalanced(node = this.root) {
+    if (node === null) return true;
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    if (Math.abs(leftHeight - rightHeight) > 1) return false;
+
+    return this.isBalanced(node.left) && this.isBalanced(node.right);
+  }
+
+  rebalance() {
+    const values = this.inOrder();
+    this.root = this.buildTree(values);
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -125,10 +261,29 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
   }
 };
-const array = [1, 2, 3, 4, 5, 6, 7, 7, 9, 10];
+const array = [1, 2, 3, 4, 5, 6, 7, 7, 9, 10, 11, 22, 23, 24, 25, 26, 27,];
 const t = new Tree(array);
 //t.insert(10);
 //t.deleteItem(4)
-const element = t.find(t.root, 5)
-console.log(element);
+const element = t.find(t.root, 27)
+
 prettyPrint(t.root);
+// Perform traversals
+//console.log("In-order traversal without callback:");
+//console.log(t.inOrder()); // Should return an array of values
+//
+//console.log("Pre-order traversal without callback:");
+//console.log(t.preOrder()); // Should return an array of values
+//
+//console.log("Post-order traversal without callback:");
+//console.log(t.postOrder()); // Should return an array of values
+
+console.log(t.height(element))
+console.log(t.depth(element))
+t.insert(21)
+if (t.isBalanced()){
+  console.log("Tree is already balanced !");
+}else{
+  rebalance();
+  prettyPrint(t.root);
+}
